@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTasks } from './hooks/useTasks';
 import { Category, Status, Task, User } from './types';
 import Header from './components/Header';
-import BottomNav from './components/BottomNav';
 import TaskList from './components/TaskList';
 import Dashboard from './components/Dashboard';
 import TaskForm from './components/TaskForm';
@@ -12,7 +11,8 @@ import AuthPage from './components/AuthPage';
 import AccountPage from './components/AccountPage';
 import SettingsPage from './components/SettingsPage';
 import HelpPage from './components/HelpPage';
-import { PlusIcon, ChartPieIcon, CheckCircleIcon, ArchiveBoxIcon, ListBulletIcon } from './components/icons/Icons';
+import Sidebar from './components/Sidebar';
+import { PlusIcon, ChartPieIcon, CheckCircleIcon, ArchiveBoxIcon, ListBulletIcon, Bars3Icon } from './components/icons/Icons';
 
 type View = 'today' | 'unplanned' | 'completed' | 'dashboard';
 type AppView = 'landing' | 'auth' | 'app';
@@ -43,6 +43,7 @@ export default function App() {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [activeModal, setActiveModal] = useState<ModalView | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -103,12 +104,13 @@ export default function App() {
   const unplannedTasks = useMemo(() => tasks.filter(t => t.status === Status.Unplanned), [tasks]);
   const completedTasks = useMemo(() => tasks.filter(t => t.status === Status.Completed), [tasks]);
   
-  const navItems = [
-      { id: 'today', label: 'Today', icon: ListBulletIcon, count: todayTasks.length },
-      { id: 'unplanned', label: 'Unplanned', icon: ArchiveBoxIcon, count: unplannedTasks.length },
-      { id: 'completed', label: 'Completed', icon: CheckCircleIcon, count: completedTasks.length },
-      { id: 'dashboard', label: 'Dashboard', icon: ChartPieIcon, count: 0 },
-  ];
+  // No longer needed as navItems are now defined within Sidebar
+  // const navItems = [
+  //     { id: 'today', label: 'Today', icon: ListBulletIcon, count: todayTasks.length },
+  //     { id: 'unplanned', label: 'Unplanned', icon: ArchiveBoxIcon, count: unplannedTasks.length },
+  //     { id: 'completed', label: 'Completed', icon: CheckCircleIcon, count: completedTasks.length },
+  //     { id: 'dashboard', label: 'Dashboard', icon: ChartPieIcon, count: 0 },
+  // ];
 
   const renderTaskView = () => {
     switch (activeView) {
@@ -148,7 +150,7 @@ export default function App() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <div className="app-container">
+                  <div className="app-container-with-sidebar">
                     <Header
                       user={user}
                       theme={theme}
@@ -157,6 +159,7 @@ export default function App() {
                       onShowSettings={() => setActiveModal('settings')}
                       onShowHelp={() => setActiveModal('help')}
                       onLogout={handleLogout}
+                      onOpenSidebar={() => setIsSidebarOpen(true)}
                     />
                     
                     <main className="main-content">
@@ -183,8 +186,6 @@ export default function App() {
                        </button>
                     </div>
 
-                    <BottomNav items={navItems} activeView={activeView} setActiveView={setActiveView} />
-
                     <AnimatePresence>
                         {isTaskFormOpen && (
                             <TaskForm 
@@ -199,6 +200,15 @@ export default function App() {
                         {activeModal === 'help' && <HelpPage onClose={() => setActiveModal(null)} />}
                     </AnimatePresence>
                   </div>
+                  <Sidebar
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                    activeView={activeView}
+                    setActiveView={setActiveView}
+                    todayTaskCount={todayTasks.length}
+                    unplannedTaskCount={unplannedTasks.length}
+                    completedTaskCount={completedTasks.length}
+                  />
                 </motion.div>
           );
       }

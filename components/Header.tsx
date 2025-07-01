@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User } from '../types';
 import { 
     SunIcon, MoonIcon, LogoutIcon, EllipsisVerticalIcon,
-    UserCircleIcon, Cog6ToothIcon, QuestionMarkCircleIcon 
+    UserCircleIcon, Cog6ToothIcon, QuestionMarkCircleIcon, Bars3Icon
 } from './icons/Icons';
 
 interface HeaderProps {
@@ -14,9 +14,10 @@ interface HeaderProps {
   onShowSettings: () => void;
   onShowHelp: () => void;
   onLogout: () => void;
+  onOpenSidebar: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, theme, onToggleTheme, onShowAccount, onShowSettings, onShowHelp, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ user, theme, onToggleTheme, onShowAccount, onShowSettings, onShowHelp, onLogout, onOpenSidebar }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   
@@ -44,9 +45,12 @@ const Header: React.FC<HeaderProps> = ({ user, theme, onToggleTheme, onShowAccou
 
   return (
     <header className="header-container">
+      <button onClick={onOpenSidebar} className="header-menu-button" aria-label="Open sidebar">
+        <Bars3Icon className="w-6 h-6" />
+      </button>
       <div>
         <h1 className="header-title">
-          Raven
+            Raven
         </h1>
         <p className="header-greeting">{greeting}</p>
       </div>
